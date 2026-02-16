@@ -18,12 +18,12 @@ TESTS_PASSED=0
 TESTS_FAILED=0
 
 pass() {
-  ((TESTS_PASSED++))
+  ((TESTS_PASSED++)) || true
   echo "  PASS: $1"
 }
 
 fail() {
-  ((TESTS_FAILED++))
+  ((TESTS_FAILED++)) || true
   echo "  FAIL: $1"
   echo "        Expected: $2"
   echo "        Actual:   $3"
@@ -69,7 +69,7 @@ source_run_sh() {
 # ---------------------------------------------------------------------------
 test_discover_packages() {
   echo "test_discover_packages"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
@@ -83,7 +83,7 @@ test_discover_packages() {
 
 test_discover_packages_empty() {
   echo "test_discover_packages_empty"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
@@ -101,7 +101,7 @@ test_discover_packages_empty() {
 
 test_has_build_runner_true() {
   echo "test_has_build_runner_true"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
@@ -114,7 +114,7 @@ test_has_build_runner_true() {
 
 test_has_build_runner_false() {
   echo "test_has_build_runner_false"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
@@ -127,7 +127,7 @@ test_has_build_runner_false() {
 
 test_set_output() {
   echo "test_set_output"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
@@ -146,7 +146,7 @@ test_set_output() {
 
 test_set_output_no_github() {
   echo "test_set_output_no_github"
-  ((TESTS_RUN++))
+  ((TESTS_RUN++)) || true
 
   source_run_sh
 
