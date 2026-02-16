@@ -1,0 +1,13 @@
+name: test_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+workspace:
+  - packages/pkg_a
+  - packages/pkg_b
+  - packages/pkg_no_gen
+
+dev_dependencies:
+  build_runner: ^2.4.0

@@ -1,0 +1,9 @@
+name: pkg_a
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  json_serializable: ^6.0.0

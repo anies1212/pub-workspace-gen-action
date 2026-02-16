@@ -1,0 +1,66 @@
+name: 'Pub Workspace Gen'
+description: 'Run build_runner across Dart/Flutter pub workspaces in parallel with caching support'
+
+branding:
+  icon: 'zap'
+  color: 'blue'
+
+inputs:
+  working-directory:
+    description: 'Root directory of the workspace'
+    required: false
+    default: '.'
+  concurrency:
+    description: 'Maximum number of parallel build_runner processes (0 = unlimited)'
+    required: false
+    default: '0'
+  include-root:
+    description: 'Run build_runner in the root package before parallel execution'
+    required: false
+    default: 'true'
+  build-runner-args:
+    description: 'Additional arguments passed to build_runner'
+    required: false
+    default: '--delete-conflicting-outputs'
+  cache:
+    description: 'Enable caching of generated files'
+    required: false
+    default: 'true'
+
+outputs:
+  packages:
+    description: 'Comma-separated list of packages that were processed'
+    value: ${{ steps.run.outputs.packages }}
+  cache-hit:
+    description: 'Whether the generated files cache was hit'
+    value: ${{ steps.gen-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cache generated files
+      if: inputs.cache == 'true'
+      id: gen-cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ inputs.working-directory }}/**/*.g.dart
+          ${{ inputs.working-directory }}/**/*.freezed.dart
+          ${{ inputs.working-directory }}/**/lib/gen/
+        key: pub-ws-gen-${{ runner.os }}-${{ hashFiles(format('{0}/**/pubspec.yaml', inputs.working-directory), format('{0}/**/pubspec.lock', inputs.working-directory), format('{0}/**/lib/**/*.dart', inputs.working-directory)) }}
+
+    - name: Run build_runner
+      if: inputs.cache != 'true' || steps.gen-cache.outputs.cache-hit != 'true'
+      id: run
+      shell: bash
+      run: bash "${{ github.action_path }}/scripts/run.sh"
+      env:
+        INPUT_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+        INPUT_CONCURRENCY: ${{ inputs.concurrency }}
+        INPUT_INCLUDE_ROOT: ${{ inputs.include-root }}
+        INPUT_BUILD_RUNNER_ARGS: ${{ inputs.build-runner-args }}
+
+    - name: Skip build_runner (cache hit)
+      if: inputs.cache == 'true' && steps.gen-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: echo "::notice::build_runner skipped (cache hit)"
